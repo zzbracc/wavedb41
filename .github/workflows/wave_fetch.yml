@@ -18,10 +18,13 @@ jobs:
         run: pip install requests pandas openpyxl
       - name: 執行抓榜腳本
         run: python fetch_wave_yesterday.py
-      - name: 儲存檔案到 GitHub Repo
+           - name: 儲存檔案到 GitHub Repo
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
           git pull
           git add *.xlsx
           git commit -m "每日榜單 - 自動上傳"
