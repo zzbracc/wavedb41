@@ -1,0 +1,28 @@
+name: 每日抓 Wave 昨日榜
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # 每天 UTC+0 時間 1 點（台灣早上 9 點）
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: 設定 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: 安裝套件
+        run: pip install requests pandas openpyxl
+      - name: 執行抓榜腳本
+        run: python fetch_wave_yesterday.py
+      - name: 儲存檔案到 GitHub Repo
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git pull
+          git add *.xlsx
+          git commit -m "每日榜單 - 自動上傳"
+          git push
